@@ -42,6 +42,14 @@ build:
         cwd: bootstrap/tests
         code: |
           /bin/bash test.sh
+    - script:
+        name: scripts shellchecking
+        cwd: bootstrap/tests
+        code: |
+          sudo apt-get install shellcheck
+          uname -r
+          shellcheck ../bootstrap/*.sh
+          shellcheck ../bootstrap/*/*.sh
 deploy:
     steps:
     - install-packages:
