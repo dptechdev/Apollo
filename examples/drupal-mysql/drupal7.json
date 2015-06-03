@@ -1,0 +1,69 @@
+{
+  "id": "drupal-7",
+  "apps": [
+    {
+      "id": "mysql",
+      "container": {
+        "type": "DOCKER",
+        "docker": {
+          "image": "mysql:5.5",
+          "network": "BRIDGE",
+          "portMappings": [{
+            "containerPort": 3306,
+            "hostPort": 0,
+            "protocol": "tcp"
+          }]
+        },
+        "volumes": [{
+          "containerPath": "/var/lib/mysql",
+          "hostPath": "/mnt/mysql",
+          "mode": "RW"
+        }]
+      },
+      "env": {
+        "SERVICE_NAME": "mysql",
+        "MYSQL_DATABASE": "drupal7",
+        "MYSQL_USER": "drupal",
+        "MYSQL_PASSWORD": "drupal",
+        "MYSQL_ROOT_PASSWORD": "password"
+      },
+      "cpus": 1,
+      "mem": 512.0,
+      "instances": 1
+    },
+    {
+      "id": "drupal7",
+      "container": {
+        "type": "DOCKER",
+        "docker": {
+          "image": "drupal:7",
+          "network": "BRIDGE",
+          "portMappings": [{
+            "containerPort": 80,
+            "hostPort": 0,
+            "protocol": "tcp"
+          }]
+        }
+      },
+      "env": {
+        "SERVICE_NAME": "drupal7",
+        "DRUPAL_DB_PASSWORD": "password",
+        "DRUPAL_DB_NAME": "drupal7",
+        "DRUPAL_DB_HOST": "mysql.service.consul"
+      },
+      "cpus": 1,
+      "mem": 512.0,
+      "instances": 1,
+      "healthChecks": [{
+        "path": "/",
+        "portIndex": 0,
+        "protocol": "HTTP",
+        "gracePeriodSeconds": 30,
+        "intervalSeconds": 10,
+        "timeoutSeconds": 20,
+        "maxConsecutiveFailures": 3
+      }],
+      "dependencies": ["/drupal-7/mysql"]
+    }
+  ]
+}
